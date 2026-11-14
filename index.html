@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>משחק זיכרון</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#1e1b4b">
@@ -24,10 +24,12 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <style>
+  html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
   body {
-    margin: 0; min-height: 100vh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 16px;
+    margin: 0; height: 100vh; height: 100dvh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px;
     background: #1e1b4b; color: #fff; font-family: system-ui, sans-serif;
+    touch-action: none; user-select: none; -webkit-user-select: none;
   }
   h1 { margin: 0; font-size: 28px; }
   .stats { display: flex; gap: 24px; font-size: 18px; }
@@ -39,7 +41,7 @@
   .level.active { background: #6366f1; }
   .board.locked { opacity: .45; pointer-events: none; }
   .board {
-    --w: min(94vw, 420px);
+    --w: min(94vw, 420px, calc(100dvh - 300px));
     display: grid; grid-template-columns: repeat(var(--cols, 4), 1fr); gap: 8px;
     width: var(--w);
   }
@@ -55,6 +57,9 @@
     background: #f59e0b; color: #000; cursor: pointer;
   }
   #msg { height: 24px; font-size: 20px; }
+  #startBtn { font-size: 20px; padding: 12px 20px; font-weight: bold; min-width: 190px; }
+  #installBtn { position: fixed; top: 8px; left: 8px; font-size: 12px; padding: 6px 10px; }
+  #iosHint { position: fixed; bottom: 6px; left: 0; right: 0; margin: 0; text-align: center; font-size: 12px; }
 </style>
 </head>
 <body>
@@ -64,12 +69,11 @@
     <span>מהלכים: <b id="moves">0</b></span>
     <span>זמן: <b id="time">0</b> שנ׳</span>
   </div>
-  <button id="startBtn" class="restart" style="font-size:20px;padding:12px 44px;font-weight:bold">▶ התחל</button>
+  <button id="startBtn" class="restart">▶ התחל</button>
   <div class="board" id="board"></div>
   <div id="msg"></div>
-  <button class="restart" onclick="start()">משחק חדש</button>
-  <button id="installBtn" class="restart" hidden>📲 התקן כאפליקציה</button>
-  <p id="iosHint" hidden style="font-size:14px">באייפון: שיתוף ← "הוסף למסך הבית"</p>
+  <button id="installBtn" class="restart" hidden>📲 התקן</button>
+  <p id="iosHint" hidden>באייפון: שיתוף ← "הוסף למסך הבית"</p>
 
 <script>
   const pool = [
@@ -91,7 +95,7 @@
 
   let first = null, lock = false, moves = 0, found = 0, pairs = 0, sec = 0, timer = null, playing = false;
   const startBtn = document.getElementById("startBtn");
-  startBtn.onclick = () => begin();
+  startBtn.onclick = () => (playing ? start() : begin());
 
   function renderLevels() {
     const box = document.getElementById("levels");
@@ -129,7 +133,7 @@
     const L = levels[level];
     pairs = L.cols * L.rows / 2;
     board.style.setProperty("--cols", L.cols);
-    board.style.setProperty("--w", L.cols >= 8 ? "min(96vw, 600px)" : "min(94vw, 420px)");
+    board.style.setProperty("--w", `min(${L.cols >= 8 ? "96vw, 560px" : "94vw, 420px"}, calc(100dvh - 300px))`);
     board.style.gap = L.cols >= 8 ? "5px" : "8px";
     const picks = shuffle([...pool]).slice(0, pairs);
     shuffle([...picks, ...picks]).forEach(e => {
@@ -142,13 +146,13 @@
     });
     playing = false;
     board.classList.add("locked");
-    startBtn.style.visibility = "visible";
+    startBtn.textContent = "▶ התחל";
   }
 
   function begin() {
     playing = true;
     document.getElementById("board").classList.remove("locked");
-    startBtn.style.visibility = "hidden";
+    startBtn.textContent = "🔄 משחק חדש";
     clearInterval(timer);
     timer = setInterval(() => {
       document.getElementById("time").textContent = ++sec;
