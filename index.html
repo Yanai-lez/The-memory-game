@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>משחק זיכרון</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1e1b4b">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="זיכרון">
+<meta property="og:title" content="משחק זיכרון">
+<meta property="og:image" content="icon-512.png">
 <style>
   body {
     margin: 0; min-height: 100vh; display: flex; flex-direction: column;
@@ -31,7 +41,7 @@
 </style>
 </head>
 <body>
-  <h1>🃏 משחק זיכרון</h1>
+  <h1><img src="icon.svg" alt="" width="40" height="40" style="vertical-align:middle;border-radius:10px"> משחק זיכרון</h1>
   <div class="stats">
     <span>מהלכים: <b id="moves">0</b></span>
     <span>זמן: <b id="time">0</b> שנ׳</span>
@@ -39,6 +49,8 @@
   <div class="board" id="board"></div>
   <div id="msg"></div>
   <button class="restart" onclick="start()">משחק חדש</button>
+  <button id="installBtn" class="restart" hidden>📲 התקן כאפליקציה</button>
+  <p id="iosHint" hidden style="font-size:14px">באייפון: שיתוף ← "הוסף למסך הבית"</p>
 
 <script>
   const emojis = ["🐙","🚀","🍕","🎲","🦊","🌵","🎸","🧩"];
@@ -99,6 +111,33 @@
   }
 
   start();
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./sw.js");
+  }
+
+  let deferredPrompt;
+  const installBtn = document.getElementById("installBtn");
+
+  window.addEventListener("beforeinstallprompt", e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.hidden = false;
+  });
+
+  installBtn.onclick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    installBtn.hidden = true;
+  };
+
+  window.addEventListener("appinstalled", () => { installBtn.hidden = true; });
+
+  const isIOS = /iphone|ipad/i.test(navigator.userAgent);
+  const standalone = matchMedia("(display-mode: standalone)").matches;
+  if (isIOS && !standalone) document.getElementById("iosHint").hidden = false;
 </script>
 </body>
 </html>
