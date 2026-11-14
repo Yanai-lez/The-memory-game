@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>משחק זיכרון</title>
+<style>
+  body {
+    margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 16px;
+    background: #1e1b4b; color: #fff; font-family: system-ui, sans-serif;
+  }
+  h1 { margin: 0; font-size: 28px; }
+  .stats { display: flex; gap: 24px; font-size: 18px; }
+  .board {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    width: min(90vw, 380px);
+  }
+  .card {
+    aspect-ratio: 1; border: none; border-radius: 12px; cursor: pointer;
+    font-size: 36px; background: #6366f1; color: transparent;
+    transition: transform .25s, background .25s;
+  }
+  .card.open { background: #fff; color: #000; transform: rotateY(180deg) scaleX(-1); }
+  .card.matched { background: #22c55e; color: #000; cursor: default; }
+  button.restart {
+    padding: 10px 24px; font-size: 16px; border: none; border-radius: 8px;
+    background: #f59e0b; color: #000; cursor: pointer;
+  }
+  #msg { height: 24px; font-size: 20px; }
+</style>
+</head>
+<body>
+  <h1>🃏 משחק זיכרון</h1>
+  <div class="stats">
+    <span>מהלכים: <b id="moves">0</b></span>
+    <span>זמן: <b id="time">0</b> שנ׳</span>
+  </div>
+  <div class="board" id="board"></div>
+  <div id="msg"></div>
+  <button class="restart" onclick="start()">משחק חדש</button>
+
+<script>
+  const emojis = ["🐙","🚀","🍕","🎲","🦊","🌵","🎸","🧩"];
+  let first = null, lock = false, moves = 0, found = 0, sec = 0, timer = null;
+
+  function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function start() {
+    clearInterval(timer);
+    first = null; lock = false; moves = 0; found = 0; sec = 0;
+    document.getElementById("moves").textContent = 0;
+    document.getElementById("time").textContent = 0;
+    document.getElementById("msg").textContent = "";
+    const board = document.getElementById("board");
+    board.innerHTML = "";
+    shuffle([...emojis, ...emojis]).forEach(e => {
+      const c = document.createElement("button");
+      c.className = "card";
+      c.dataset.e = e;
+      c.textContent = e;
+      c.onclick = () => flip(c);
+      board.appendChild(c);
+    });
+    timer = setInterval(() => {
+      document.getElementById("time").textContent = ++sec;
+    }, 1000);
+  }
+
+  function flip(c) {
+    if (lock || c.classList.contains("open") || c.classList.contains("matched")) return;
+    c.classList.add("open");
+    if (!first) { first = c; return; }
+    moves++;
+    document.getElementById("moves").textContent = moves;
+    if (first.dataset.e === c.dataset.e) {
+      first.classList.replace("open", "matched");
+      c.classList.replace("open", "matched");
+      first = null;
+      if (++found === emojis.length) {
+        clearInterval(timer);
+        document.getElementById("msg").textContent =
+          `🎉 ניצחת ב-${moves} מהלכים ו-${sec} שניות!`;
+      }
+    } else {
+      lock = true;
+      setTimeout(() => {
+        first.classList.remove("open");
+        c.classList.remove("open");
+        first = null; lock = false;
+      }, 800);
+    }
+  }
+
+  start();
+</script>
+</body>
+</html>
