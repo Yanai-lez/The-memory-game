@@ -1,4 +1,4 @@
-const CACHE = "memory-game-v6";
+const CACHE = "memory-game-v7";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg",
                "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
@@ -16,8 +16,16 @@ self.addEventListener("activate", e => {
   self.clients.claim();
 });
 
+// Network first (so updates show up immediately), cache as offline fallback.
 self.addEventListener("fetch", e => {
+  if (e.request.method !== "GET") return;
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
+    fetch(e.request)
+      .then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy));
+        return res;
+      })
+      .catch(() => caches.match(e.request))
   );
 });
