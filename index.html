@@ -79,15 +79,13 @@
     "☀️","⚡","❄️","🎁","🔔","🎺","🥁","🏀","🏈","🎳","🛸","⛵","🚂","🏰","💎","🧸"
   ];
   const levels = [
-    { name: "קל", cols: 4, rows: 3 },
-    { name: "בינוני", cols: 4, rows: 4 },
-    { name: "קשה", cols: 6, rows: 6 },
-    { name: "מומחה", cols: 8, rows: 8 },
-    { name: "אגדי", cols: 10, rows: 10 }
+    { name: "קל · 4×4", cols: 4, rows: 4 },
+    { name: "בינוני · 6×6", cols: 6, rows: 6 },
+    { name: "קשה · 8×8", cols: 8, rows: 8 }
   ];
-  let level = 1;
+  let level = 0;
   try {
-    const saved = parseInt(localStorage.getItem("memoryLevel"), 10);
+    const saved = parseInt(localStorage.getItem("memoryLevel2"), 10);
     if (saved >= 0 && saved < levels.length) level = saved;
   } catch (e) {}
 
@@ -104,7 +102,7 @@
       b.textContent = L.name;
       b.onclick = () => {
         level = i;
-        try { localStorage.setItem("memoryLevel", i); } catch (e) {}
+        try { localStorage.setItem("memoryLevel2", i); } catch (e) {}
         renderLevels();
         start();
       };
