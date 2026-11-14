@@ -1,4 +1,4 @@
-const CACHE = "memory-game-v1";
+const CACHE = "memory-game-v2";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg",
                "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
