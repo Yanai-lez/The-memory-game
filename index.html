@@ -37,6 +37,7 @@
     border-radius: 999px; background: transparent; color: #fff; cursor: pointer;
   }
   .level.active { background: #6366f1; }
+  .board.locked { opacity: .45; pointer-events: none; }
   .board {
     --w: min(94vw, 420px);
     display: grid; grid-template-columns: repeat(var(--cols, 4), 1fr); gap: 8px;
@@ -63,6 +64,7 @@
     <span>מהלכים: <b id="moves">0</b></span>
     <span>זמן: <b id="time">0</b> שנ׳</span>
   </div>
+  <button id="startBtn" class="restart" style="font-size:20px;padding:12px 44px;font-weight:bold">▶ התחל</button>
   <div class="board" id="board"></div>
   <div id="msg"></div>
   <button class="restart" onclick="start()">משחק חדש</button>
@@ -89,7 +91,9 @@
     if (saved >= 0 && saved < levels.length) level = saved;
   } catch (e) {}
 
-  let first = null, lock = false, moves = 0, found = 0, pairs = 0, sec = 0, timer = null;
+  let first = null, lock = false, moves = 0, found = 0, pairs = 0, sec = 0, timer = null, playing = false;
+  const startBtn = document.getElementById("startBtn");
+  startBtn.onclick = () => begin();
 
   function renderLevels() {
     const box = document.getElementById("levels");
@@ -138,13 +142,23 @@
       c.onclick = () => flip(c);
       board.appendChild(c);
     });
+    playing = false;
+    board.classList.add("locked");
+    startBtn.style.visibility = "visible";
+  }
+
+  function begin() {
+    playing = true;
+    document.getElementById("board").classList.remove("locked");
+    startBtn.style.visibility = "hidden";
+    clearInterval(timer);
     timer = setInterval(() => {
       document.getElementById("time").textContent = ++sec;
     }, 1000);
   }
 
   function flip(c) {
-    if (lock || c.classList.contains("open") || c.classList.contains("matched")) return;
+    if (!playing || lock || c.classList.contains("open") || c.classList.contains("matched")) return;
     c.classList.add("open");
     if (!first) { first = c; return; }
     moves++;
