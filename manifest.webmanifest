@@ -1,6 +1,6 @@
 {
-  "name": "משחק זיכרון",
-  "short_name": "זיכרון",
+  "name": "משחק הזיכרון",
+  "short_name": "משחק הזיכרון",
   "lang": "he",
   "dir": "rtl",
   "start_url": "./",
