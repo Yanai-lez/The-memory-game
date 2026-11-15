@@ -12,11 +12,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="משחק הזיכרון">
-<meta name="description" content="משחק הזיכרון בעברית עם דרגות קושי ואימוג'ים חדשים בכל משחק הזיכרון. אפשר להתקין כאפליקציה.">
+<meta name="description" content="משחק הזיכרון בעברית עם דרגות קושי ואימוג'ים חדשים בכל סיבוב. אפשר להתקין כאפליקציה.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="משחק הזיכרון">
 <meta property="og:title" content="משחק הזיכרון">
-<meta property="og:description" content="מצאו את הזוגות! דרגות קושי ואימוג'ים חדשים בכל משחק הזיכרון.">
+<meta property="og:description" content="מצאו את הזוגות! דרגות קושי ואימוג'ים חדשים בכל סיבוב.">
 <meta property="og:url" content="https://yanai-lez.github.io/The-memory-game-/">
 <meta property="og:image" content="https://yanai-lez.github.io/The-memory-game-/og-image.png">
 <meta property="og:image:type" content="image/png">
@@ -152,7 +152,7 @@
   function begin() {
     playing = true;
     document.getElementById("board").classList.remove("locked");
-    startBtn.textContent = "🔄 משחק הזיכרון חדש";
+    startBtn.textContent = "🔄 משחק חדש";
     clearInterval(timer);
     timer = setInterval(() => {
       document.getElementById("time").textContent = ++sec;
