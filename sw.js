@@ -1,5 +1,5 @@
-const CACHE = "memory-game-v8";
-const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg",
+const CACHE = "memory-game-v9";
+const FILES = ["./", "./index.html", "./manifest.webmanifest?v=2", "./icon.svg",
                "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
